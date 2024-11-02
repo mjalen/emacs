@@ -107,11 +107,12 @@ Get rid of a bunch of UI, we don't need it!
   (setq evil-want-keybinding nil)
   (use-package evil
     :init
-    (evil-mode 1))
+   (evil-mode 1))
 
   (use-package evil-collection
     :config
     (evil-collection-init '(magit dired ediff)))
+
 #+end_src
 
 * Projectile
