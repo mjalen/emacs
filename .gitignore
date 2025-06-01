@@ -1,6 +1,7 @@
 *
 
 " Permit
+!README.md
 !config.org
 !init.el
 !.gitignore
