@@ -38,7 +38,7 @@
 ;;  ascii: https://emojicombos.com/frieren%3A-beyond-journey's-end
 
 ;; -*- coding: utf-8; lexical-binding: t -*-
-(load-theme 'modus-vivendi)
+(load-theme 'modus-operandi)
 
 (setq inhibit-startup-screen t
       use-package-always-ensure t
@@ -49,6 +49,8 @@
       default-directory "~/"
       display-line-numbers-mode 1
       load-prefer-newer t)
+
+(setq custom-file (make-temp-file "EmacsCustom"))
 
 (menu-bar-mode -1)
 (tool-bar-mode -1)
@@ -70,31 +72,37 @@
 			 ("org" . "https://orgmode.org/elpa/")
 			 ("elpa" . "https://elpa.gnu.org/packages/")))
 
-; Define packages here.
-(custom-set-variables
- '(package-selected-packages
-   '(package
-     recentf
-     icomplete
-     no-littering
-     evil
-     exec-path-from-shell
-     slime
-     highlight-indent-guides
-     magit)))
+; (dolist (ext-and-mode-pair '('("\\.tsx?\\'" . typescript-ts-mode)))
+;   (add-to-list 'auto-mode-alist ext-and-mode-pair))
 
-; Make sure all packages are installed.
-(dolist (pkg package-selected-packages)
-  (if (not (package-installed-p pkg))
-      (package-install pkg))
-  (require pkg))
+; Define packages here.
+(let ((package-list
+       '(package
+	 recentf
+	 icomplete
+	 no-littering
+	 evil
+	 exec-path-from-shell
+	 slime
+	 highlight-indent-guides
+	 magit
+	 tree-sitter
+	 tree-sitter-langs
+	 corfu)))
+  (dolist (pkg package-list)
+    (if (not (package-installed-p pkg))
+	(package-install pkg))
+    (require pkg)))
 
 (with-eval-after-load 'exec-path-from-shell
   (exec-path-from-shell-initialize))
 
 (with-eval-after-load 'icomplete
-  (fido-mode -1)
-  (icomplete-mode t))
+  (add-hook 'icomplete-mode-hook #'icomplete-vertical-mode)
+  (setq icomplete-scroll t
+	icomplete-show-matches-on-no-input t
+	completion-styles '(basic partial-completion flex))
+  (icomplete-mode 1))
 
 (with-eval-after-load 'no-littering
   (add-to-list 'recentf-exclude no-littering-var-directory)
@@ -114,4 +122,20 @@
   (load (expand-file-name "~/.roswell/helper.el"))
   (setq inferior-lisp-program "ros -Q run"))
 
-(custom-set-faces)
+(with-eval-after-load 'tree-sitter
+  (global-tree-sitter-mode)
+  (add-hook 'typescript-ts-mode #'tree-sitter-hl-mode))
+
+(with-eval-after-load 'eglot
+  (eglot t))
+
+(with-eval-after-load 'corfu
+  (setq corfu-preview-current t
+	corfu-auto t
+	corfu-cycle t
+	corfu-preselect 'prompt 
+	tab-always-indent 'complete)
+  (keymap-set corfu-map "<tab>" #'corfu-next)
+  (keymap-set corfu-map "<backtab>" #'corfu-previous)
+  (corfu-popupinfo-mode t)
+  (global-corfu-mode))
