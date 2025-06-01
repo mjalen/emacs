@@ -38,7 +38,7 @@
 ;;  ascii: https://emojicombos.com/frieren%3A-beyond-journey's-end
 
 ;; -*- coding: utf-8; lexical-binding: t -*-
-(load-theme 'modus-operandi)
+(load-theme 'modus-vivendi)
 
 (setq inhibit-startup-screen t
       use-package-always-ensure t
@@ -65,6 +65,9 @@
 (set-charset-priority 'unicode)
 (prefer-coding-system 'utf-8-unix)
 
+(set-frame-parameter nil 'alpha-background 70)
+(add-to-list 'default-frame-alist '(alpha-background . 80))
+
 (add-to-list 'default-frame-alist '(font . "Victor Mono-13"))
 (set-frame-font "Victor Mono-13")
 
@@ -72,8 +75,6 @@
 			 ("org" . "https://orgmode.org/elpa/")
 			 ("elpa" . "https://elpa.gnu.org/packages/")))
 
-; (dolist (ext-and-mode-pair '('("\\.tsx?\\'" . typescript-ts-mode)))
-;   (add-to-list 'auto-mode-alist ext-and-mode-pair))
 
 ; Define packages here.
 (let ((package-list
@@ -88,11 +89,28 @@
 	 magit
 	 tree-sitter
 	 tree-sitter-langs
-	 corfu)))
+	 corfu
+	 nix-mode
+	 markdown-mode
+	 yasnippet)))
   (dolist (pkg package-list)
     (if (not (package-installed-p pkg))
 	(package-install pkg))
     (require pkg)))
+
+(let ((lsp-bridge-path "~/Documents/lsp-bridge"))
+  (if (file-exists-p lsp-bridge-path)
+      (progn
+	(add-to-list 'load-path lsp-bridge-path)
+	(require 'lsp-bridge))))
+
+(with-eval-after-load 'lsp-bridge
+  (require 'yasnippet)
+  (yas-global-mode 1)
+  (setq lsp-bridge-nix-lsp-server "nil")
+  (global-lsp-bridge-mode))
+  
+(add-to-list 'auto-mode-alist '("\\.nix\\'" . nix-mode))
 
 (with-eval-after-load 'exec-path-from-shell
   (exec-path-from-shell-initialize))
@@ -103,6 +121,7 @@
 	icomplete-show-matches-on-no-input t
 	completion-styles '(basic partial-completion flex))
   (icomplete-mode 1))
+
 
 (with-eval-after-load 'no-littering
   (add-to-list 'recentf-exclude no-littering-var-directory)
@@ -118,24 +137,27 @@
   (set-face-foreground 'highlight-indent-guides-character-face "ffffff")
   (add-hook 'prog-mode-hook 'highlight-indent-guides-mode))
 
-(with-eval-after-load 'slime
-  (load (expand-file-name "~/.roswell/helper.el"))
-  (setq inferior-lisp-program "ros -Q run"))
-
 (with-eval-after-load 'tree-sitter
   (global-tree-sitter-mode)
   (add-hook 'typescript-ts-mode #'tree-sitter-hl-mode))
 
-(with-eval-after-load 'eglot
-  (eglot t))
+; (with-eval-after-load 'eglot
+;   (require 'eglot)
+;   (add-to-list 'eglot-server-programs '(nix-mode . ("nil")))
+;   (add-hook 'nix-mode 'eglot-ensure)
+;   (eglot t))
 
-(with-eval-after-load 'corfu
-  (setq corfu-preview-current t
-	corfu-auto t
-	corfu-cycle t
-	corfu-preselect 'prompt 
-	tab-always-indent 'complete)
-  (keymap-set corfu-map "<tab>" #'corfu-next)
-  (keymap-set corfu-map "<backtab>" #'corfu-previous)
-  (corfu-popupinfo-mode t)
-  (global-corfu-mode))
+; (with-eval-after-load 'corfu
+;   (setq corfu-preview-current t
+; 	corfu-auto t
+; 	corfu-cycle t
+; 	corfu-preselect 'prompt 
+; 	tab-always-indent 'complete)
+;   (keymap-set corfu-map "<tab>" #'corfu-next)
+;   (keymap-set corfu-map "<backtab>" #'corfu-previous)
+;   (corfu-popupinfo-mode t)
+;   (global-corfu-mode))
+
+; (with-eval-after-load 'slime
+;   (load (expand-file-name "~/.roswell/helper.el"))
+;   (setq inferior-lisp-program "ros -Q run"))
