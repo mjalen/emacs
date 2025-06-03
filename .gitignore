@@ -1,6 +1,9 @@
 *
 
 " Permit
+!emacs.nix
+!flake.nix
+!flake.lock
 !README.md
 !config.org
 !init.el
