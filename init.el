@@ -48,7 +48,9 @@
       mark-even-if-inactive nil
       default-directory "~/"
       display-line-numbers-mode 1
-      load-prefer-newer t)
+      load-prefer-newer t
+      auth-source-pass-filename "~/Documents/.password-store"
+      epa-pinentry-mode 'loopback)
 
 (setq custom-file (make-temp-file "EmacsCustom"))
 
@@ -92,7 +94,8 @@
 	 corfu
 	 nix-mode
 	 markdown-mode
-	 yasnippet)))
+	 yasnippet
+	 pass)))
   (dolist (pkg package-list)
     (if (not (package-installed-p pkg))
 	(package-install pkg))
@@ -158,6 +161,6 @@
 ;   (corfu-popupinfo-mode t)
 ;   (global-corfu-mode))
 
-; (with-eval-after-load 'slime
-;   (load (expand-file-name "~/.roswell/helper.el"))
-;   (setq inferior-lisp-program "ros -Q run"))
+(with-eval-after-load 'slime
+  (setq inferior-lisp-program "sbcl"))
+
